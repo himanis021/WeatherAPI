@@ -57,3 +57,37 @@ Request Params
 
 
 Note: All the test cases are written in the Tests tab. Test Results can be seen after hitting the API in the below section as "Test results".
+
+# Test Scripts:
+
+  # Use the weather API to get the weather for New Delhi - Get weather in the standard unit (Kelvin) 
+    pm.test("Get weather in the standard unit (Kelvin)", ()=> {
+      let jsonData = pm.response.json();
+      pm.environment.set("Weather_in_Kelvin", jsonData.main.temp);
+      console.log("Weather in Kelvin : "+jsonData.main.temp); 
+    });
+    pm.test("Status code is 200", function () {
+      pm.response.to.have.status(200);
+    });
+  
+  # Use the weather API to get the weather for New Delhi - Get weather by changing unit to metric (celsius) 
+    pm.test("Get weather by changing unit to metric (celsius)", ()=> {
+      let jsonData = pm.response.json();
+      console.log("Weather in Celsius: "+jsonData.list[0].main.temp);
+      pm.environment.set("Weather_in_Celsius", jsonData.list[0].main.temp);
+    });
+
+    pm.test("Status code is 200", function () {
+      pm.response.to.have.status(200);
+    });
+    
+  # See if the values are matching (up to 2% error while converting is ok)
+    let k = pm.environment.get("Weather_in_Kelvin");
+    let c = pm.environment.get("Weather_in_Celsius");
+    pm.test("See if the values are matching (up to 2% error while converting is ok)", function () {
+        let cc = (k-273.15);
+        console.log("Weather in Kelvin from API hit: "+k);
+        console.log("Weather in Celsius from API hit: "+c);
+        // pm.expect(pm.environment.get("Weather_in_Celsius")).to.eql(cc); 
+        pm.expect(pm.environment.get("Weather_in_Celsius")).to.be.oneOf([cc,cc+(0.02*cc),cc-(0.02*cc)]);
+    });
