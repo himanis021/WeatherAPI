@@ -1,0 +1,188 @@
+{
+	"info": {
+		"_postman_id": "0d1f1b6b-d979-4fa1-b3e3-f9eb2faf17c5",
+		"name": "WeatherAPI",
+		"description": "Create a test case to check the following\n● Use the weather API to get the weather for New Delhi\n○ Get weather in the standard unit (Kelvin)\n○ Get weather by changing unit to metric (celsius)\n● See if the values are matching (up to 2% error while converting is ok)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetWeatherInKelvin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "46f823aa-ece4-4aec-bf17-7973e539f1e3",
+						"exec": [
+							"pm.test(\"Get weather in the standard unit (Kelvin)\", ()=> {",
+							"    let jsonData = pm.response.json();",
+							"    pm.environment.set(\"Weather_in_Kelvin\", jsonData.main.temp);",
+							"    console.log(\"Weather in Kelvin : \"+jsonData.main.temp); ",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"postman.setNextRequest(\"GetWeatherByChangingUnitToCelsius\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{app_id}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "api.openweathermap.org/data/2.5/weather?q=New Delhi",
+					"host": [
+						"api",
+						"openweathermap",
+						"org"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "New Delhi"
+						},
+						{
+							"key": "appid",
+							"value": "{API key}",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetWeatherByChangingUnitToCelsius",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7b97fc65-e929-4d55-b2a1-4e5f77276c1d",
+						"exec": [
+							"pm.test(\"Get weather by changing unit to metric (celsius)\", ()=> {",
+							"    let jsonData = pm.response.json();",
+							"    console.log(\"Weather in Celsius: \"+jsonData.list[0].main.temp);",
+							"    pm.environment.set(\"Weather_in_Celsius\", jsonData.list[0].main.temp);",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"let k = pm.environment.get(\"Weather_in_Kelvin\");",
+							"let c = pm.environment.get(\"Weather_in_Celsius\");",
+							"pm.test(\"See if the values are matching (up to 2% error while converting is ok)\", function () {",
+							"    let cc = (k-273.15);",
+							"    console.log(\"Weather in Kelvin from API hit: \"+k);",
+							"    console.log(\"Weather in Celsius from API hit: \"+c);",
+							"    // pm.expect(pm.environment.get(\"Weather_in_Celsius\")).to.eql(cc); ",
+							"    pm.expect(pm.environment.get(\"Weather_in_Celsius\")).to.be.oneOf([cc,cc+(0.02*cc),cc-(0.02*cc)]);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{app_id}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "appid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "api.openweathermap.org/data/2.5/find?q=New Delhi&units=metric",
+					"host": [
+						"api",
+						"openweathermap",
+						"org"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"find"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "New Delhi"
+						},
+						{
+							"key": "units",
+							"value": "metric"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "9c4e3644-bc58-42bc-b76f-3fad209ff34f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "bfc71eea-cf43-4bcb-8b78-bb5b52f66af7",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
