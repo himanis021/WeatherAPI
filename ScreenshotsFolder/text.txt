@@ -1,0 +1,1 @@
+Screenshots folders for better understanding of the API testing
